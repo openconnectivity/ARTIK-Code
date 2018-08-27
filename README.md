@@ -13,7 +13,7 @@ https://github.com/openconnectivity/Project-Scripts
 
 To install all the ARTIK samples, just type the following command.
 
-- curl https://openconnectivity.github.io/ARTIK-Code/artik/install.sh | bash
+- curl https://openconnectivity.github.io/ARTIK-Code/install.sh | bash
 
 This command will do a number of things:
 
