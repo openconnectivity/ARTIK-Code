@@ -1,31 +1,26 @@
-# Sample Code for Glade/GTK Emulator Projects
+# Sample Code for Samsung ARTIK BoardProjects
 
-This repository contains code for creating an IoTivity-lite server emulator with GUI running on the the host OS. The examples include support for the glade GUI generator tool and GTK.
-
-Currently, this has only been tested on IoTivity-lite and Ubuntu linux, but other platforms may work with slight modification.
+This repository contains code for creating IoTivity and IoTivity-lite server on the Samsung ARTIK boards. There is currently just one sample, but it has been tested to run on the ARTIK 530s using both IoTivity and IoTivity-lite.
 
 There is currently one sample project.
-- dimlight - This project creates a graphical dimmable light bulb that can be turned off or on and can be set to a dimming level between 0% and 100%. There are actually only 4 different brightness pictures, but the code will support any number of pictures if you have better graphics.
+- artiklight - This project creates an OCF server that controls the blue LED directly on the ARTIK 530s. It uses the binarySwith resource
 
 # Installation
 
-To install all the samples described above, just type the following command.
+NOTE: These instructions assume you are using the project scripts (e.g. gen2.sh, etc). These can be found in the Project-Scripts repo located here:
+
+https://github.com/openconnectivity/Project-Scripts
+
+To install all the ARTIK samples, just type the following command.
 
 - curl https://openconnectivity.github.io/ARTIK-Code/artik/install.sh | bash
 
 This command will do a number of things:
 
-- Clone the Emulator-Code repository (which includes all the sample code described above). Each sample subdirectory includes the following files:
-  - Several updated scripts (ending in "2") that support building projects in any directory.
+  - Clone the ARTIK-Code repository (which includes all the sample code described above). Each sample subdirectory includes the following files:
   - Makefile: A Makefile description file that will manage the compiling and linking of the project.
-  - <sample>.json: The JSON device description file that is the input to DeviceBuilder and describes all the resources available on the device. Each of these resources will show up in the source code and introspection file created by DeviceBuilder.
-  - <sample>.c: The C code that includes all the resources plus the code to interface to the glade GUI. This code can be copied over the C code created by DeviceBuilder when the gen2.sh script is run in order to control the hardware.
-  - Glade source and graphics that will generate the GUI.
-
-One other note:
-
-Some environment variables may need to be updated. When the curl command is run, the ~/.bashrc file will be modified so that these envorinment variables are set on bootup. The system will need ~/.bashrc to be run. The following command should do it.
-- source ~/.bashrc
+  - <sample>.cpp: The C++ code for IoTivity that includes all the resources plus the code to interface to the ARTIK 530s.
+  - <sample>.c: The C code for IoTivity-lite that includes all the resources plus the code to interface to the ARTIK 530s.
 
 # Building and Running the samples
 
@@ -45,5 +40,3 @@ A number of convenience scripts have been written to make the development cycle 
     1. Discover, onboard and control the server using OTGC
     2. Discover, onboard and control the server using DeviceSpy
     3. Test the server using CTT
-3. If you want to modify the glade GUI, run glade and open the following file:
-    1. project_name/bin/glade/window_main.glade
