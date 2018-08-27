@@ -25,12 +25,6 @@ if [[ ! -v EXAMPLEPATH ]]; then
     echo "export EXAMPLEPATH=`pwd`" >> ~/.bashrc
 fi
 
-git clone https://github.com/openconnectivity/Emulator-Code.git
-
-MY_COMMAND="cp ./Emulator-Code/IoTivity-lite/*.sh ${OCFPATH}/../iot-lite/"
-eval ${MY_COMMAND}
-
-sudo apt-get install glade
-sudo apt-get install libgtk-3-dev
+git clone https://github.com/openconnectivity/ARTIK-Code.git
 
 cd $CURPWD
