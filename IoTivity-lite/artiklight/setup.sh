@@ -2,15 +2,11 @@
 CURPWD=`pwd`
 PROJNAME=${PWD##*/}
 
-MY_COMMAND="cp ${EXAMPLEPATH}/Emulator-Code/IoTivity-lite/dimlight/Makefile $CURPWD/src/"
+MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/artiklight/Makefile $CURPWD/"
 eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/Emulator-Code/emulator/dimlight/dimlight.json $CURPWD/$PROJNAME.json"
+MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/emulator/artiklight/artiklight.json $CURPWD/$PROJNAME.json"
 eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/Emulator-Code/IoTivity-lite/dimlight/dimlight.c $CURPWD/src/$PROJNAME.c"
+MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/artiklight/artiklight.c $CURPWD/src/$PROJNAME.c"
 eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/Emulator-Code/IoTivity-lite/dimlight/dimlight.c.gen $CURPWD/src/$PROJNAME.c.gen"
-eval ${MY_COMMAND}
-MY_COMMAND="mkdir $CURPWD/bin/glade/"
-eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/Emulator-Code/emulator/dimlight/glade/* $CURPWD/bin/glade/"
+MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/artiklight/artiklight.c.gen $CURPWD/src/$PROJNAME.c.gen"
 eval ${MY_COMMAND}

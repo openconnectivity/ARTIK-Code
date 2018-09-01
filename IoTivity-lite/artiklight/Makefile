@@ -18,7 +18,6 @@ libdir = $(exec_prefix)/lib
 includedir = $(prefix)/include
 pkgconfigdir = $(libdir)/pkgconfig
 EXTRA_CFLAGS =
-GTKFLAGS=-export-dynamic `pkg-config --cflags --libs gtk+-3.0`
 
 MBEDTLS_DIR := $(ROOT_DIR)/deps/mbedtls
 GTEST_DIR = $(ROOT_DIR)/deps/gtest
@@ -225,12 +224,12 @@ temp_sensor: libiotivity-constrained-client.a $(ROOT_DIR)/apps/temp_sensor_clien
 	@mkdir -p $@_creds
 	${CC} -o $@ ../../apps/temp_sensor_client_linux.c libiotivity-constrained-client.a -DOC_CLIENT ${CFLAGS} ${LIBS}
 
-    
+
 
 device_builder_server: libiotivity-constrained-server.a
 	@mkdir -p $@_creds
-	${CC} -o $@ ../../apps/device_builder_server.c libiotivity-constrained-server.a -DOC_SERVER ${CFLAGS} ${GTKFLAGS} ${LIBS}
-    
+	${CC} -o $@ ../../apps/device_builder_server.c libiotivity-constrained-server.a -DOC_SERVER ${CFLAGS} ${LIBS}
+
 simpleserver: libiotivity-constrained-server.a
 	@mkdir -p $@_creds
 	${CC} -o $@ ../../apps/simpleserver.c libiotivity-constrained-server.a -DOC_SERVER ${CFLAGS}  ${LIBS}
