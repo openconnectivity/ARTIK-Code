@@ -48,14 +48,20 @@ cpp_defines = ['__WITH_DTLS__', 'TB_LOG']
 libraries = ['octbstack']
 libraries.append('oc')
 #libraries.append('log')
-		
+
 platform_info = p.platform()
 joule = 'Linux' in platform_info and 'joule' in platform_info and \
 'Ubuntu' in platform_info
 raspberry_pi = 'Linux' in platform_info and \
 ('armv7l' in platform_info or 'armv6l' in platform_info) and \
 'debian' in platform_info
-if joule or raspberry_pi:
+
+#******Added for ARTIK*************************************************
+artik_530s = 'Linux' in platform_info and \
+'armv7l' in platform_info and \
+'Ubuntu' in platform_info
+#**********************************************************************
+if joule or raspberry_pi or artik_530s:
     conf = Configure(env)
     if not conf.CheckCXXHeader('mraa.hpp'):
         print("required library mraa not installed! ")
@@ -80,6 +86,10 @@ if joule or raspberry_pi:
             cpp_defines.append('JOULE')
         elif not joule and raspberry_pi:
             cpp_defines.append('RASPBERRY')
+#******Added for ARTIK*************************************************
+        elif not joule and not raspberry_pi and artik_530s:
+            cpp_defines.append('ARTIK')
+#**********************************************************************
         else:
             print "ERROR: unknown board"
     conf.Finish()
