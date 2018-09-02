@@ -26,7 +26,7 @@
 * register_resources
 *  function that registers all endpoints, e.g. sets the RETRIEVE/UPDATE handlers for each end point
 *
-* main 
+* main
 *  starts the stack, with the registered resources.
 *
 * Each endpoint has:
@@ -81,7 +81,7 @@ static CRITICAL_SECTION cs;     // event loop variable
 volatile int quit = 0;  // stop variable, used by handle_signal
 
 //===Header and Fuction for Artik==============
-#ifdef ARTIK
+//#ifdef ARTIK
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -146,7 +146,7 @@ int setup() {
      return -1;
    return 0;
 }
-#endif
+//#endif
 //=============================================
 
 // global variables for path: /binaryswitch
@@ -156,7 +156,7 @@ bool g_binaryswitch_value = false; // current value of property "value" Status o
 static char g_binaryswitch_RESOURCE_ENDPOINT[] = "/binaryswitch";  // used path for this resource
 static char g_binaryswitch_RESOURCE_TYPE[][MAX_STRING] = {"oic.r.switch.binary"}; // rt value (as an array)
 int g_binaryswitch_nr_resource_types = 1;
-static char g_binaryswitch_RESOURCE_INTERFACE[][MAX_STRING] = {"oic.if.a","oic.if.baseline"}; // interface if (as an array) 
+static char g_binaryswitch_RESOURCE_INTERFACE[][MAX_STRING] = {"oic.if.a","oic.if.baseline"}; // interface if (as an array)
 int g_binaryswitch_nr_resource_interfaces = 2;
 /**
 * function to set up the device.
@@ -166,7 +166,7 @@ static int
 app_init(void)
 {
   int ret = oc_init_platform("ocf", NULL, NULL);
-  ret |= oc_add_device("/oic/d", "oic.d.light", "Binary Switch", 
+  ret |= oc_add_device("/oic/d", "oic.d.light", "Binary Switch",
                        "ocf.1.0.0", // icv value
                        "ocf.res.1.3.0, ocf.sh.1.3.0",  // dmv value
                        NULL, NULL);
@@ -191,7 +191,7 @@ convert_if_string(char *interface_name)
   return OC_IF_A;
 }
 
- 
+
 /**
 * get method for "/binaryswitch" endpoint to intialize the returned values from the global values
 * This resource describes a binary switch (on/off).
@@ -206,14 +206,14 @@ static void
 get_binaryswitch(oc_request_t *request, oc_interface_mask_t interfaces, void *user_data)
 {
   (void)user_data;  // not used
-  
+
   // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
   // the calls needs to fill in the global variable before it is returned.
   // alternative is to have a callback from the hardware that sets the global variables
-  
+
   // the current implementation always return everything that belongs to the resource.
   // this kind of implementation is not optimal, but is correct and will pass CTT1.2.2
-  
+
   PRINT("get_binaryswitch: interface %d\n", interfaces);
   oc_rep_start_root_object();
   switch (interfaces) {
@@ -222,7 +222,7 @@ get_binaryswitch(oc_request_t *request, oc_interface_mask_t interfaces, void *us
   case OC_IF_A:
   PRINT("   Adding Baseline info\n" );
     oc_process_baseline_interface(request->resource);
-    oc_rep_set_boolean(root, value, g_binaryswitch_value); 
+    oc_rep_set_boolean(root, value, g_binaryswitch_value);
     PRINT("   %s : %d\n", g_binaryswitch_RESOURCE_PROPERTY_NAME_value,  g_binaryswitch_value );
     break;
   default:
@@ -231,7 +231,7 @@ get_binaryswitch(oc_request_t *request, oc_interface_mask_t interfaces, void *us
   oc_rep_end_root_object();
   oc_send_response(request, OC_STATUS_OK);
 }
- 
+
 /**
 * post method for "/binaryswitch" endpoint to assign the returned values to the global values.
 
@@ -249,15 +249,15 @@ post_binaryswitch(oc_request_t *request, oc_interface_mask_t interfaces, void *u
     PRINT("key: (check) %s ", oc_string(rep->name));if (strcmp ( oc_string(rep->name), g_binaryswitch_RESOURCE_PROPERTY_NAME_value) == 0)
     {
       // value exist in payload
-      
+
       if (rep->type != OC_REP_BOOL)
       {
         error_state = true;
         PRINT ("   property 'value' is not of type bool %d \n", rep->type);
       }
     }
-    
-    
+
+
     rep = rep->next;
   }
   if (error_state == false)
@@ -276,14 +276,14 @@ post_binaryswitch(oc_request_t *request, oc_interface_mask_t interfaces, void *u
     // set the response
     oc_rep_start_root_object();
     //oc_process_baseline_interface(request->resource);
-    oc_rep_set_boolean(root, value, g_binaryswitch_value); 
+    oc_rep_set_boolean(root, value, g_binaryswitch_value);
     oc_rep_end_root_object();
-    
+
     // TODO: ACTUATOR add here the code to talk to the HW if one implements an actuator.
     // one can use the global variables as input to those calls
     // the global values have been updated already with the data from the request
     digitalWrite(outputPin, g_binaryswitch_value);
-    
+
     oc_send_response(request, OC_STATUS_CHANGED);
   }
   else
@@ -311,13 +311,13 @@ register_resources(void)
   {
     oc_resource_bind_resource_interface(res_binaryswitch, convert_if_string(g_binaryswitch_RESOURCE_INTERFACE[a]));
   }
-  oc_resource_set_default_interface(res_binaryswitch, convert_if_string(g_binaryswitch_RESOURCE_INTERFACE[0]));  
+  oc_resource_set_default_interface(res_binaryswitch, convert_if_string(g_binaryswitch_RESOURCE_INTERFACE[0]));
   PRINT("     default interface: %d (%s)\n", convert_if_string(g_binaryswitch_RESOURCE_INTERFACE[0]), g_binaryswitch_RESOURCE_INTERFACE[0]);
   oc_resource_set_discoverable(res_binaryswitch, true);
   oc_resource_set_periodic_observable(res_binaryswitch, 1);
-   
+
   oc_resource_set_request_handler(res_binaryswitch, OC_GET, get_binaryswitch, NULL);
-   
+
   oc_resource_set_request_handler(res_binaryswitch, OC_POST, post_binaryswitch, NULL);
   oc_add_resource(res_binaryswitch);
 }
@@ -387,7 +387,7 @@ int init;
 #endif
 
     //=enabling GPIO and checking and testing on ARTIK==========================
-    #ifdef ARTIK
+//    #ifdef ARTIK
     if (setup() == -1)
       {
         exit(1);
@@ -397,13 +397,13 @@ int init;
     sleep(1);
     digitalWrite(outputPin, LOW);
     sleep(1);
-    #endif
+//    #endif
     //===========================================================================
 
   // initialize global variables for endpoint "/binaryswitch"
   g_binaryswitch_value = false; // current value of property "value" Status of the switch
-   
-  
+
+
   // no oic/con resource.
   oc_set_con_res_announced(false);
 
@@ -413,11 +413,11 @@ int init;
                                        .register_resources = register_resources
 #ifdef OC_CLIENT
                                        ,
-                                       .requests_entry = 0 
+                                       .requests_entry = 0
 #endif
                                        };
   oc_clock_time_t next_event;
-  
+
   PRINT("file : /root/artiklight-lite/device_output/out_codegeneration_merged.swagger.json\n");
   PRINT("title: Binary Switch\n");
 
@@ -443,7 +443,7 @@ int init;
     }
   }
 #endif
-  
+
 #ifdef __linux__
   // linux specific loop
   while (quit != 1) {
