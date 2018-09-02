@@ -82,6 +82,7 @@ volatile int quit = 0;  // stop variable, used by handle_signal
 
 //===Header and Fuction for Artik==============
 //#ifdef ARTIK
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
