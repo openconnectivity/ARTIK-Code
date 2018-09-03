@@ -10,10 +10,10 @@ There is currently one sample project.
 
 You can see ARTIK SDK(API) on this page: https://developer.artik.io/documentation/api/index.html.
  
-Other links
-GPIO example code : https://developer.artik.io/documentation/api/gpio_test_2artik_gpio_test_8c-example.html
-ARTIK SDK example code on github : https://github.com/SamsungARTIK/artik-sdk-examples
-Eagleye 530s pin programming : http://wiki.seeedstudio.com/Eagleye_530s/#play-with-pin-programming
+Other links:
+- GPIO example code : https://developer.artik.io/documentation/api/gpio_test_2artik_gpio_test_8c-example.html
+- ARTIK SDK example code on github : https://github.com/SamsungARTIK/artik-sdk-examples
+- Eagleye 530s pin programming : http://wiki.seeedstudio.com/Eagleye_530s/#play-with-pin-programming
 
 
 # Installation
