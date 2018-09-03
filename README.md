@@ -5,6 +5,17 @@ This repository contains code for creating IoTivity and IoTivity-lite server on 
 There is currently one sample project.
 - artiklight - This project creates an OCF server that controls the blue LED directly on the ARTIK 530s. It uses the binarySwith resource
 
+# Artik information
+
+
+You can see ARTIK SDK(API) on this page: https://developer.artik.io/documentation/api/index.html.
+ 
+Other links
+GPIO example code : https://developer.artik.io/documentation/api/gpio_test_2artik_gpio_test_8c-example.html
+ARTIK SDK example code on github : https://github.com/SamsungARTIK/artik-sdk-examples
+Eagleye 530s pin programming : http://wiki.seeedstudio.com/Eagleye_530s/#play-with-pin-programming
+
+
 # Installation
 
 NOTE: These instructions assume you are using the project scripts (e.g. gen2.sh, etc). These can be found in the Project-Scripts repo located here:
