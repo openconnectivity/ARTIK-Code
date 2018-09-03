@@ -2,13 +2,11 @@
 CURPWD=`pwd`
 PROJNAME=${PWD##*/}
 
-MY_COMMAND="cp ${EXAMPLEPATH}/Sample-Raspberry-Pi-Code/IoTivity-lite/enviro-phat/Makefile $CURPWD/"
+MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/OCFArtikEnviro/Makefile $CURPWD/"
 eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/Sample-Raspberry-Pi-Code/pi-boards/enviro-phat/enviro-phat.json $CURPWD/$PROJNAME.json"
+MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/pi-boards/enviro-phat/OCFArtikEnviro.json $CURPWD/$PROJNAME.json"
 eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/Sample-Raspberry-Pi-Code/IoTivity-lite/enviro-phat/enviro-phat.c $CURPWD/src/$PROJNAME.c"
+MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/OCFArtikEnviro/OCFArtikEnviro.c $CURPWD/src/$PROJNAME.c"
 eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/Sample-Raspberry-Pi-Code/IoTivity-lite/enviro-phat/enviro-phat.c.gen $CURPWD/src/$PROJNAME.c.gen"
-eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/Sample-Raspberry-Pi-Code/pi-boards/enviro-phat/enviro-phat.py $CURPWD/bin/"
+MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/OCFArtikEnviro/OCFArtikEnviro.c.gen $CURPWD/src/$PROJNAME.c.gen"
 eval ${MY_COMMAND}
