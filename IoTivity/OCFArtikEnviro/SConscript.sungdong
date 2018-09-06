@@ -120,20 +120,19 @@ if target_os in ['linux']:
 ######################################################################
 # Source files and Targets
 ######################################################################
-client = samples_env.Program('client', ['client.c'])
+#client = samples_env.Program('client', ['client.c'])
 server = samples_env.Program('server', ['server.cpp'])
-examples_dir = '/examples/OCFArtikEnviro/'
-client_dat = samples_env.Install(
-    build_dir + examples_dir, src_dir + examples_dir + 'ocf_svr_db_client.dat')
-client_dev = samples_env.Install(
-    build_dir + examples_dir, src_dir + examples_dir + 'device_properties.dat')
-server_dat = samples_env.Install(
-    build_dir + examples_dir, src_dir + examples_dir + 'ocf_svr_db_server.dat')
-introspection_dat = samples_env.Install(
-    build_dir + examples_dir, src_dir + examples_dir + 'switch_introspection.dat')
+examples_dir = '/examples/OCFDeviceBuilder/'
+#client_dat = samples_env.Install(
+#    build_dir + examples_dir, src_dir + examples_dir + 'ocf_svr_db_client.dat')
+#client_dev = samples_env.Install(
+#    build_dir + examples_dir, src_dir + examples_dir + 'device_properties.dat')
+#server_dat = samples_env.Install(
+#    build_dir + examples_dir, src_dir + examples_dir + 'ocf_svr_db_server.dat')
 
-list_of_samples = [client, client_dat, client_dev, server, server_dat]
+#list_of_samples = [client, client_dat, client_dev, server, server_dat]
+list_of_samples = [server]
 
-Alias("artikExamples", list_of_samples)
+Alias("OCFDeviceBuilder", list_of_samples)
 
-env.AppendTarget('aritkExamples')
+env.AppendTarget('OCFDeviceBuilder')
