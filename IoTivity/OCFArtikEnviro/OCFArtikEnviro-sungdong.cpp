@@ -28,11 +28,7 @@
 #include <windows.h>
 #endif
 
-#ifdef MRAA
-#include "mraa.hpp"
-#endif
 
-#ifdef ARTIK
 #include <artik_module.h>
 #include <artik_loop.h>
 #include <artik_platform.h>
@@ -42,8 +38,6 @@ struct led_gpio{
  artik_gpio_handle handle;
  artik_gpio_config config;
 };
-
-#endif
 
 #include "ocstack.h"
 #include "OCPlatform.h"
@@ -61,6 +55,12 @@ namespace PH = std::placeholders;
 */
 
 #define INTERFACE_KEY "if"
+
+// artik gpio setting
+artik_gpio_module *gpio = (artik_gpio_module *) artik_request_api_module("gpio");
+struct led_gpio led = {NULL, {ARTIK_EAGLEYE530_AGPIO0,0, GPIO_OUT, GPIO_EDGE_NONE, 0, NULL} };
+artik_error ret = S_OK;
+
 
 /*
 * default class, so that we have to define less variables/functions.
@@ -116,16 +116,6 @@ class BinaryswitchResource : public Resource
          * @return OC_STACK_OK on success
          */
         OCStackResult sendNotification();
-/* Raspberry Pi GPIO
-mraa::Gpio *gpio;
-int ledPin = 7;
-*/
-// artik gpio setting
-#ifdef ARTIK
-artik_gpio_module *gpio = (artik_gpio_module *) artik_request_api_module("gpio");
-struct led_gpio led = {NULL, {ARTIK_EAGLEYE530_AGPIO0,0, GPIO_OUT, GPIO_EDGE_NONE, 0, NULL} };
-artik_error ret = S_OK;
-#endif
 
    private:
         /*
@@ -160,7 +150,7 @@ artik_error ret = S_OK;
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
         bool m_var_value_value; // the value for the attribute "value": Status of the switch
         std::string m_var_name_value = "value"; // the name for the attribute "value"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -190,31 +180,6 @@ BinaryswitchResource::BinaryswitchResource(std::string resourceUri)
     // initialize vector rt  Resource Type
     m_var_value_rt.push_back("oic.r.switch.binary");
     m_var_value_value = false; // current value of property "value" Status of the switch
-/* GPIO for Raspberry Pi
-gpio = new mraa::Gpio(ledPin);
-if (!gpio)
-{
-    std::cout << "Error instantiating gpio" << std::endl;
-}
-gpio->dir(mraa::DIR_OUT);
-gpio->write(1);
-sleep(1);
-gpio->write(0);
-}
-*/
-//ARTIK Operation test
-ret = gpio->request(&led.handle, &led.config);
-if (ret != S_OK)
-{
- gpio->release(led.handle);
- fprintf(stdout, "TEST: %s %s\n", __func__, (ret == S_OK) ? "succeeded" : "failed");
-}
-else
-{
- gpio->write(led.handle, 1);
- sleep(1);
- gpio->write(led.handle, 0);
-}
 }
 /*
 * Destructor code
@@ -281,17 +246,17 @@ OCStackResult BinaryswitchResource::sendNotification(void)
 OCRepresentation BinaryswitchResource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
     std::cout << "\t\t" << "property 'value' : "<< ((m_var_value_value) ? "true" : "false") << std::endl;
-
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
-    m_rep.setValue(m_var_name_value, m_var_value_value );
+    
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
+    m_rep.setValue(m_var_name_value, m_var_value_value ); 
     return m_rep;
 }
 /*
@@ -304,52 +269,52 @@ OCEntityHandlerResult BinaryswitchResource::post(QueryParamsMap queries, const O
 {
     OCEntityHandlerResult ehResult = OC_EH_OK;
     OC_UNUSED(queries);
-
+    
     // TODO: missing code: add check on array contents out of range
  // such a check is resource specific
     try {
         if (rep.hasAttribute(m_var_name_if))
         {
             // value exist in payload
-
+            
             // check if "if" is read only
             ehResult = OC_EH_ERROR;
             std::cout << "\t\t" << "property 'if' is readOnly "<< std::endl;
-
+            
         }
     }
     catch (std::exception& e)
     {
         std::cout << e.what() << std::endl;
     }
-
+    
     try {
         if (rep.hasAttribute(m_var_name_n))
         {
             // value exist in payload
-
+            
             // check if "n" is read only
             ehResult = OC_EH_ERROR;
             std::cout << "\t\t" << "property 'n' is readOnly "<< std::endl;
-
+            
         }
     }
     catch (std::exception& e)
     {
         std::cout << e.what() << std::endl;
     }
-
+    
     // TODO: missing code: add check on array contents out of range
  // such a check is resource specific
     try {
         if (rep.hasAttribute(m_var_name_rt))
         {
             // value exist in payload
-
+            
             // check if "rt" is read only
             ehResult = OC_EH_ERROR;
             std::cout << "\t\t" << "property 'rt' is readOnly "<< std::endl;
-
+            
         }
     }
     catch (std::exception& e)
@@ -360,7 +325,7 @@ OCEntityHandlerResult BinaryswitchResource::post(QueryParamsMap queries, const O
         if (rep.hasAttribute(m_var_name_value))
         {
             // value exist in payload
-
+            
         }
     }
     catch (std::exception& e)
@@ -585,8 +550,8 @@ OCEntityHandlerResult BinaryswitchResource::entityHandler(std::shared_ptr<OCReso
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -683,7 +648,7 @@ class BrightnessResource : public Resource
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
         void* m_var_value_value; // the value for the attribute "value": The value sensed or actuated by this Resource
         std::string m_var_name_value = "value"; // the name for the attribute "value"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -779,17 +744,17 @@ OCStackResult BrightnessResource::sendNotification(void)
 OCRepresentation BrightnessResource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
     std::cout << "\t\t" << "property 'brightness' : "<< m_var_value_brightness << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
-
-    m_rep.setValue(m_var_name_brightness, m_var_value_brightness );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
+    
+    m_rep.setValue(m_var_name_brightness, m_var_value_brightness ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
     return m_rep;
 }
 /*
@@ -859,8 +824,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -961,7 +926,7 @@ class ColourrgbResource : public Resource
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
         void* m_var_value_value; // the value for the attribute "value": The value sensed or actuated by this Resource
         std::string m_var_name_value = "value"; // the name for the attribute "value"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -991,7 +956,7 @@ ColourrgbResource::ColourrgbResource(std::string resourceUri)
     // initialize vector rgbValue  RGB value; the first item is the R, second the G, third the B.m_var_value_rgbValue.push_back(255);
     m_var_value_rgbValue.push_back(255);
     m_var_value_rgbValue.push_back(255);
-
+    
     // initialize vector rt  Resource Type
     m_var_value_rt.push_back("oic.r.colour.rgb");
     }
@@ -1060,16 +1025,16 @@ OCStackResult ColourrgbResource::sendNotification(void)
 OCRepresentation ColourrgbResource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
-
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rgbValue,  m_var_value_rgbValue );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
+    
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rgbValue,  m_var_value_rgbValue ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
     return m_rep;
 }
 /*
@@ -1139,8 +1104,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -1233,7 +1198,7 @@ class HeadingResource : public Resource
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
         std::vector<double>  m_var_value_value; // the value for the array attribute "value": Array containing Hx, Hy, Hz.
         std::string m_var_name_value = "value"; // the name for the attribute "value"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -1265,7 +1230,7 @@ HeadingResource::HeadingResource(std::string resourceUri)
     // initialize vector value  Array containing Hx, Hy, Hz.m_var_value_value.push_back(100.0);
     m_var_value_value.push_back(15.0);
     m_var_value_value.push_back(90.0);
-
+    
     }
 /*
 * Destructor code
@@ -1332,16 +1297,16 @@ OCStackResult HeadingResource::sendNotification(void)
 OCRepresentation HeadingResource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
-
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
-    m_rep.setValue(m_var_name_value,  m_var_value_value );
+    
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
+    m_rep.setValue(m_var_name_value,  m_var_value_value ); 
     return m_rep;
 }
 /*
@@ -1411,8 +1376,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -1505,7 +1470,7 @@ class PressureResource : public Resource
         std::string m_var_name_n = "n"; // the name for the attribute "n"
         std::vector<std::string>  m_var_value_rt; // the value for the array attribute "rt": Resource Type
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -1602,19 +1567,19 @@ OCStackResult PressureResource::sendNotification(void)
 OCRepresentation PressureResource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
     std::cout << "\t\t" << "property 'atmosphericPressure' : "<< m_var_value_atmosphericPressure << std::endl;
     std::cout << "\t\t" << "property 'id' : "<< m_var_value_id << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
-
-    m_rep.setValue(m_var_name_atmosphericPressure, m_var_value_atmosphericPressure );
-    m_rep.setValue(m_var_name_id, m_var_value_id );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
+    
+    m_rep.setValue(m_var_name_atmosphericPressure, m_var_value_atmosphericPressure ); 
+    m_rep.setValue(m_var_name_id, m_var_value_id ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
     return m_rep;
 }
 /*
@@ -1684,8 +1649,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -1796,7 +1761,7 @@ class TemperatureResource : public Resource
         std::string m_var_name_temperature = "temperature"; // the name for the attribute "temperature"
         void* m_var_value_units; // the value for the attribute "units": Units for the temperature value
         std::string m_var_name_units = "units"; // the name for the attribute "units"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -1893,19 +1858,19 @@ OCStackResult TemperatureResource::sendNotification(void)
 OCRepresentation TemperatureResource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
     std::cout << "\t\t" << "property 'id' : "<< m_var_value_id << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
     std::cout << "\t\t" << "property 'temperature' : "<< m_var_value_temperature << std::endl;
-
-    m_rep.setValue(m_var_name_id, m_var_value_id );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
-    m_rep.setValue(m_var_name_temperature, m_var_value_temperature );
+    
+    m_rep.setValue(m_var_name_id, m_var_value_id ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
+    m_rep.setValue(m_var_name_temperature, m_var_value_temperature ); 
     return m_rep;
 }
 /*
@@ -1975,8 +1940,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -2075,7 +2040,7 @@ class Voltage0Resource : public Resource
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
         double m_var_value_voltage; // the value for the attribute "voltage": The electric voltage in Volts (V).
         std::string m_var_name_voltage = "voltage"; // the name for the attribute "voltage"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -2176,7 +2141,7 @@ OCStackResult Voltage0Resource::sendNotification(void)
 OCRepresentation Voltage0Resource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
@@ -2187,16 +2152,16 @@ OCRepresentation Voltage0Resource::get(QueryParamsMap queries)
     std::cout << "\t\t" << "property 'frequency' : "<< m_var_value_frequency << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
     std::cout << "\t\t" << "property 'voltage' : "<< m_var_value_voltage << std::endl;
-
-    m_rep.setValue(m_var_name_current, m_var_value_current );
-    m_rep.setValue(m_var_name_desiredcurrent, m_var_value_desiredcurrent );
-    m_rep.setValue(m_var_name_desiredfrequency, m_var_value_desiredfrequency );
-    m_rep.setValue(m_var_name_desiredvoltage, m_var_value_desiredvoltage );
-    m_rep.setValue(m_var_name_frequency, m_var_value_frequency );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
-    m_rep.setValue(m_var_name_voltage, m_var_value_voltage );
+    
+    m_rep.setValue(m_var_name_current, m_var_value_current ); 
+    m_rep.setValue(m_var_name_desiredcurrent, m_var_value_desiredcurrent ); 
+    m_rep.setValue(m_var_name_desiredfrequency, m_var_value_desiredfrequency ); 
+    m_rep.setValue(m_var_name_desiredvoltage, m_var_value_desiredvoltage ); 
+    m_rep.setValue(m_var_name_frequency, m_var_value_frequency ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
+    m_rep.setValue(m_var_name_voltage, m_var_value_voltage ); 
     return m_rep;
 }
 /*
@@ -2266,8 +2231,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -2366,7 +2331,7 @@ class Voltage1Resource : public Resource
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
         double m_var_value_voltage; // the value for the attribute "voltage": The electric voltage in Volts (V).
         std::string m_var_name_voltage = "voltage"; // the name for the attribute "voltage"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -2467,7 +2432,7 @@ OCStackResult Voltage1Resource::sendNotification(void)
 OCRepresentation Voltage1Resource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
@@ -2478,16 +2443,16 @@ OCRepresentation Voltage1Resource::get(QueryParamsMap queries)
     std::cout << "\t\t" << "property 'frequency' : "<< m_var_value_frequency << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
     std::cout << "\t\t" << "property 'voltage' : "<< m_var_value_voltage << std::endl;
-
-    m_rep.setValue(m_var_name_current, m_var_value_current );
-    m_rep.setValue(m_var_name_desiredcurrent, m_var_value_desiredcurrent );
-    m_rep.setValue(m_var_name_desiredfrequency, m_var_value_desiredfrequency );
-    m_rep.setValue(m_var_name_desiredvoltage, m_var_value_desiredvoltage );
-    m_rep.setValue(m_var_name_frequency, m_var_value_frequency );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
-    m_rep.setValue(m_var_name_voltage, m_var_value_voltage );
+    
+    m_rep.setValue(m_var_name_current, m_var_value_current ); 
+    m_rep.setValue(m_var_name_desiredcurrent, m_var_value_desiredcurrent ); 
+    m_rep.setValue(m_var_name_desiredfrequency, m_var_value_desiredfrequency ); 
+    m_rep.setValue(m_var_name_desiredvoltage, m_var_value_desiredvoltage ); 
+    m_rep.setValue(m_var_name_frequency, m_var_value_frequency ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
+    m_rep.setValue(m_var_name_voltage, m_var_value_voltage ); 
     return m_rep;
 }
 /*
@@ -2557,8 +2522,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -2657,7 +2622,7 @@ class Voltage2Resource : public Resource
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
         double m_var_value_voltage; // the value for the attribute "voltage": The electric voltage in Volts (V).
         std::string m_var_name_voltage = "voltage"; // the name for the attribute "voltage"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -2758,7 +2723,7 @@ OCStackResult Voltage2Resource::sendNotification(void)
 OCRepresentation Voltage2Resource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
@@ -2769,16 +2734,16 @@ OCRepresentation Voltage2Resource::get(QueryParamsMap queries)
     std::cout << "\t\t" << "property 'frequency' : "<< m_var_value_frequency << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
     std::cout << "\t\t" << "property 'voltage' : "<< m_var_value_voltage << std::endl;
-
-    m_rep.setValue(m_var_name_current, m_var_value_current );
-    m_rep.setValue(m_var_name_desiredcurrent, m_var_value_desiredcurrent );
-    m_rep.setValue(m_var_name_desiredfrequency, m_var_value_desiredfrequency );
-    m_rep.setValue(m_var_name_desiredvoltage, m_var_value_desiredvoltage );
-    m_rep.setValue(m_var_name_frequency, m_var_value_frequency );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
-    m_rep.setValue(m_var_name_voltage, m_var_value_voltage );
+    
+    m_rep.setValue(m_var_name_current, m_var_value_current ); 
+    m_rep.setValue(m_var_name_desiredcurrent, m_var_value_desiredcurrent ); 
+    m_rep.setValue(m_var_name_desiredfrequency, m_var_value_desiredfrequency ); 
+    m_rep.setValue(m_var_name_desiredvoltage, m_var_value_desiredvoltage ); 
+    m_rep.setValue(m_var_name_frequency, m_var_value_frequency ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
+    m_rep.setValue(m_var_name_voltage, m_var_value_voltage ); 
     return m_rep;
 }
 /*
@@ -2848,8 +2813,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -2948,7 +2913,7 @@ class Voltage3Resource : public Resource
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
         double m_var_value_voltage; // the value for the attribute "voltage": The electric voltage in Volts (V).
         std::string m_var_name_voltage = "voltage"; // the name for the attribute "voltage"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -3049,7 +3014,7 @@ OCStackResult Voltage3Resource::sendNotification(void)
 OCRepresentation Voltage3Resource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
@@ -3060,16 +3025,16 @@ OCRepresentation Voltage3Resource::get(QueryParamsMap queries)
     std::cout << "\t\t" << "property 'frequency' : "<< m_var_value_frequency << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
     std::cout << "\t\t" << "property 'voltage' : "<< m_var_value_voltage << std::endl;
-
-    m_rep.setValue(m_var_name_current, m_var_value_current );
-    m_rep.setValue(m_var_name_desiredcurrent, m_var_value_desiredcurrent );
-    m_rep.setValue(m_var_name_desiredfrequency, m_var_value_desiredfrequency );
-    m_rep.setValue(m_var_name_desiredvoltage, m_var_value_desiredvoltage );
-    m_rep.setValue(m_var_name_frequency, m_var_value_frequency );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
-    m_rep.setValue(m_var_name_voltage, m_var_value_voltage );
+    
+    m_rep.setValue(m_var_name_current, m_var_value_current ); 
+    m_rep.setValue(m_var_name_desiredcurrent, m_var_value_desiredcurrent ); 
+    m_rep.setValue(m_var_name_desiredfrequency, m_var_value_desiredfrequency ); 
+    m_rep.setValue(m_var_name_desiredvoltage, m_var_value_desiredvoltage ); 
+    m_rep.setValue(m_var_name_frequency, m_var_value_frequency ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
+    m_rep.setValue(m_var_name_voltage, m_var_value_voltage ); 
     return m_rep;
 }
 /*
@@ -3139,8 +3104,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -3231,7 +3196,7 @@ class XmotionResource : public Resource
         std::string m_var_name_n = "n"; // the name for the attribute "n"
         std::vector<std::string>  m_var_value_rt; // the value for the array attribute "rt": Resource Type
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -3327,17 +3292,17 @@ OCStackResult XmotionResource::sendNotification(void)
 OCRepresentation XmotionResource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
     std::cout << "\t\t" << "property 'acceleration' : "<< m_var_value_acceleration << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
-
-    m_rep.setValue(m_var_name_acceleration, m_var_value_acceleration );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
+    
+    m_rep.setValue(m_var_name_acceleration, m_var_value_acceleration ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
     return m_rep;
 }
 /*
@@ -3407,8 +3372,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -3499,7 +3464,7 @@ class YmotionResource : public Resource
         std::string m_var_name_n = "n"; // the name for the attribute "n"
         std::vector<std::string>  m_var_value_rt; // the value for the array attribute "rt": Resource Type
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -3595,17 +3560,17 @@ OCStackResult YmotionResource::sendNotification(void)
 OCRepresentation YmotionResource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
     std::cout << "\t\t" << "property 'acceleration' : "<< m_var_value_acceleration << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
-
-    m_rep.setValue(m_var_name_acceleration, m_var_value_acceleration );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
+    
+    m_rep.setValue(m_var_name_acceleration, m_var_value_acceleration ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
     return m_rep;
 }
 /*
@@ -3675,8 +3640,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -3767,7 +3732,7 @@ class ZmotionResource : public Resource
         std::string m_var_name_n = "n"; // the name for the attribute "n"
         std::vector<std::string>  m_var_value_rt; // the value for the array attribute "rt": Resource Type
         std::string m_var_name_rt = "rt"; // the name for the attribute "rt"
-
+        
     protected:
         /*
          * Check if the interface is
@@ -3863,17 +3828,17 @@ OCStackResult ZmotionResource::sendNotification(void)
 OCRepresentation ZmotionResource::get(QueryParamsMap queries)
 {
     OC_UNUSED(queries);
-
+ 
  // TODO: SENSOR add here the code to talk to the HW if one implements a sensor.
  // the calls needs to fill in the member variable before it is returned.
  // alternative is to have a callback from the hardware that sets the member variables
     std::cout << "\t\t" << "property 'acceleration' : "<< m_var_value_acceleration << std::endl;
     std::cout << "\t\t" << "property 'n' : "<< m_var_value_n << std::endl;
-
-    m_rep.setValue(m_var_name_acceleration, m_var_value_acceleration );
-    m_rep.setValue(m_var_name_if,  m_var_value_if );
-    m_rep.setValue(m_var_name_n, m_var_value_n );
-    m_rep.setValue(m_var_name_rt,  m_var_value_rt );
+    
+    m_rep.setValue(m_var_name_acceleration, m_var_value_acceleration ); 
+    m_rep.setValue(m_var_name_if,  m_var_value_if ); 
+    m_rep.setValue(m_var_name_n, m_var_value_n ); 
+    m_rep.setValue(m_var_name_rt,  m_var_value_rt ); 
     return m_rep;
 }
 /*
@@ -3943,8 +3908,8 @@ else
             std::cout << "\t\trequestFlag : observer ";
             if (ObserveAction::ObserveRegister == observationInfo.action)
             {
-                std::cout << "register" << std::endl;
-            }
+                std::cout << "register" << std::endl; 
+            } 
             else
             {
                 std::cout << "unregister" << std::endl;
@@ -4382,6 +4347,20 @@ void handle_signal(int signal)
 // starts the server
 int main(void)
 {
+ 
+ //ARTIK Operation test
+    ret = gpio->request(&led.handle, &led.config);
+    if (ret != S_OK)
+    {
+       gpio->release(led.handle);
+       fprintf(stdout, "TEST: %s %s\n", __func__, (ret == S_OK) ? "succeeded" : "failed");
+    }
+    else
+    {
+       gpio->write(led.handle, 1);
+       sleep(1);
+       gpio->write(led.handle, 0);
+    }
     Platform platform;
     if(OC_STACK_OK != platform.start())
     {
