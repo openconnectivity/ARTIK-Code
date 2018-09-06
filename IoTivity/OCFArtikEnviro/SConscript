@@ -34,21 +34,20 @@ build_dir = env.get('BUILD_DIR')
 # Build flags
 ######################################################################
 samples_env.PrependUnique(CPPPATH=[
-    '#/resource/include',
+    '#/resource/include/',
     '#/resource/csdk/include',
     '#/resource/csdk/stack/include',
-    '#/resource/csdk/stack/include/internal',
+    '#/resource/csdk/stack/include/experimental',
     '#/resource/csdk/security/include',
     '#/resource/csdk/connectivity/api',
-    '#/resource/csdk/logger/include',
-    '#/resource/oc_logger/include'
-
+    '#/resource/oc_logger/include',
+    '#/resource/csdk/logger/include/experimental',
+    '/usr/include/arm-linux-gnueabihf/artik/base',
+    '/usr/include/arm-linux-gnueabihf/artik/systemio'
 ])
 cpp_defines = ['__WITH_DTLS__', 'TB_LOG']
-libraries = ['octbstack']
-libraries.append('oc')
-#libraries.append('log')
-
+libraries = ['octbstack', 'oc']
+# identify which hardware the samples will be running on.
 platform_info = p.platform()
 joule = 'Linux' in platform_info and 'joule' in platform_info and \
 'Ubuntu' in platform_info
@@ -61,9 +60,10 @@ artik_530s = 'Linux' in platform_info and \
 'armv7l' in platform_info and \
 'Ubuntu' in platform_info
 #**********************************************************************
+
 if joule or raspberry_pi or artik_530s:
     conf = Configure(env)
-    if not conf.CheckCXXHeader('mraa.hpp'):
+    if not conf.CheckCXXHeader('mraa.hpp') and not artik_530s:
         print("required library mraa not installed! ")
         if joule and not raspberry_pi:
             print(" To install mraa\n\
@@ -80,16 +80,25 @@ if joule or raspberry_pi or artik_530s:
         else:
             print("please install mraa")
     else:
-        cpp_defines.append('MRAA')
+        cpp_defines.append('WITH_MRAA')
         libraries.append('mraa')
-        if joule and not raspberry_pi:
+        if joule and not raspberry_pi and not artik_530s:
             cpp_defines.append('JOULE')
-        elif not joule and raspberry_pi:
+        elif not joule and raspberry_pi and not artik_530s:
             cpp_defines.append('RASPBERRY')
+
 #******Added for ARTIK*************************************************
         elif not joule and not raspberry_pi and artik_530s:
-            cpp_defines.append('ARTIK')
+            if not conf.CheckCHeader('artik_gpio.h')
+                print(" To install ARTIK Library\n\
+                #sudo apt-get update\n\
+                #sudo apt-get install libartik-sdk-dev\n")
+            else:
+                cpp_defines.append('ARTIK')
+                libraries.append('artik-sdk-base')
+                libraries.append('artik-sdk-systemio')
 #**********************************************************************
+
         else:
             print "ERROR: unknown board"
     conf.Finish()
