@@ -3,6 +3,7 @@
 This repository contains code for creating IoTivity and IoTivity-lite server on the Samsung ARTIK boards. There is currently just one sample, but it has been tested to run on the ARTIK 530s using both IoTivity and IoTivity-lite.
 
 There is currently one sample project.
+- OCFArtikEnviro - This project creates an OCF server that controls the LED on the Enviro pHat by using ARTIK Library.
 - artiklight - This project creates an OCF server that controls the blue LED directly on the ARTIK 530s. It uses the binarySwith resource
 
 # Artik information
