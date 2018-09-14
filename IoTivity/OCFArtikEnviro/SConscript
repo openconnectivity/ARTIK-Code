@@ -89,7 +89,7 @@ if joule or raspberry_pi or artik_530s:
 
 #******Added for ARTIK*************************************************
         elif not joule and not raspberry_pi and artik_530s:
-            if not conf.CheckCHeader('artik_gpio.h')
+            if not conf.CheckCHeader('artik_gpio.h'):
                 print(" To install ARTIK Library\n\
                 #sudo apt-get update\n\
                 #sudo apt-get install libartik-sdk-dev\n")
