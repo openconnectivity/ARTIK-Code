@@ -30,7 +30,7 @@ if [[ ! -v EXAMPLEPATH ]]; then
     echo "export EXAMPLEPATH=`pwd`" >> ~/.bashrc
 fi
 
-git clone https://github.com/openconnectivity/Sample-Raspberry-Pi-Code.git
+git clone https://github.com/openconnectivity/ARTIK-Code.git
 
 curl https://get.pimoroni.com/automationhat | bash
 curl https://get.pimoroni.com/envirophat | bash
