@@ -20,11 +20,20 @@ set -x #echo on
 
 CURPWD=`pwd`
 
+if [[ ! -v PYTHONPATH ]]; then
+    export PYTHONPATH='.'
+    echo "export PYTHONPATH='.'" >> ~/.bashrc
+fi
+
 if [[ ! -v EXAMPLEPATH ]]; then
-    export EXAMPLEPATH='.'
+    export EXAMPLEPATH=$CURPWD
     echo "export EXAMPLEPATH=`pwd`" >> ~/.bashrc
 fi
 
 git clone https://github.com/openconnectivity/ARTIK-Code.git
+
+curl https://get.pimoroni.com/automationhat | bash
+curl https://get.pimoroni.com/envirophat | bash
+curl https://get.pimoroni.com/explorerhat | bash
 
 cd $CURPWD
