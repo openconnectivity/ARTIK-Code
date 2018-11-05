@@ -143,7 +143,7 @@ bool digitalWrite(int pin, int val) {
   return true;
 }
 
-int setup() {
+int setup_out() {
    if (!digitalPinMode(outputPin, OUTPUT))
      return -1;
    return 0;
@@ -152,6 +152,7 @@ int setup() {
 int digitalRead(int pin) {
   FILE * fd;
   char fName[128];
+  char *result;
   char val[2];
 
   // Open pin value file
@@ -160,13 +161,16 @@ int digitalRead(int pin) {
     printf("Error: can't open pin value\n");
     return false;
   }
-  fgets(val, 2, fd);
+  result = fgets(val, 2, fd);
+  if(0) {
+   printf("%s", result);
+  }
   fclose(fd);
 
   return atoi(val);
 }
 
-int setup() {
+int setup_in() {
    if (!digitalPinMode(inputPin, INPUT))
      return -1;
 
@@ -307,6 +311,9 @@ get_switch(oc_request_t *request, oc_interface_mask_t interfaces, void *user_dat
   case OC_IF_A:
   PRINT("   Adding Baseline info\n" );
     oc_process_baseline_interface(request->resource);
+    //Reading ARTIK switch============================
+    g_switch_value = !(digitalRead(inputPin));
+    //================================================
     oc_rep_set_boolean(root, value, g_switch_value);
     PRINT("   %s : %d\n", g_switch_RESOURCE_PROPERTY_NAME_value,  g_switch_value );
     break;
@@ -507,7 +514,7 @@ int init;
 #endif
  
      //=enabling GPIO and checking and testing on ARTIK==========================
-    if (setup() == -1)
+    if (setup_out() == -1)
       {
         exit(1);
       }
@@ -526,10 +533,10 @@ int init;
   g_switch_value = false; // current value of property "value" Status of the switch
  
   //Reading ARTIK switch===================================
-  while(1) {
-    g_switch_value = !(digitalRead(inputPin));
-    sleep(1);
-  }
+  if (setup_in() == -1)
+      {
+        exit(1);
+      }
   //======================================================
 
 
