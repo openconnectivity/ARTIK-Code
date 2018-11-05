@@ -2,11 +2,7 @@
 CURPWD=`pwd`
 PROJNAME=${PWD##*/}
 
-MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/OCFArtikEnviro/Makefile $CURPWD/"
-eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/artik/OCFArtikEnviro/OCFArtikEnviro.json $CURPWD/$PROJNAME.json"
-eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/OCFArtikEnviro/OCFArtikEnviro.c $CURPWD/src/$PROJNAME.c"
-eval ${MY_COMMAND}
-MY_COMMAND="cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/OCFArtikEnviro/OCFArtikEnviro.c.gen $CURPWD/src/$PROJNAME.c.gen"
-eval ${MY_COMMAND}
+cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/OCFArtikEnviro/Makefile ${CURPWD}/
+cp ${EXAMPLEPATH}/ARTIK-Code/artik/OCFArtikEnviro/OCFArtikEnviro.json ${CURPWD}/${PROJNAME}.json
+cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/OCFArtikEnviro/OCFArtikEnviro.c ${CURPWD}/src/${PROJNAME}.c
+cp ${EXAMPLEPATH}/ARTIK-Code/IoTivity-lite/OCFArtikEnviro/OCFArtikEnviro-gen.c ${CURPWD}/src/${PROJNAME}-gen.c
