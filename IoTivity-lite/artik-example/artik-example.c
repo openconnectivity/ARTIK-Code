@@ -524,6 +524,13 @@ int init;
 
   // initialize global variables for endpoint "/switch"
   g_switch_value = false; // current value of property "value" Status of the switch
+ 
+  //Reading ARTIK switch===================================
+  while(1) {
+    g_switch_value = !(digitalRead(inputPin));
+    sleep(1);
+  }
+  //======================================================
 
 
   // no oic/con resource.
