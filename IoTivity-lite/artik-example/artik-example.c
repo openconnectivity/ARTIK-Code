@@ -81,6 +81,100 @@ static CRITICAL_SECTION cs;     // event loop variable
 #define MAX_STRING 65   // max size of the strings.
 volatile int quit = 0;  // stop variable, used by handle_signal
 
+//===Header and Fuction for Artik==============
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define HIGH 1
+#define LOW 0
+#define INPUT 1
+#define OUTPUT 0
+
+int outputPin = 159;
+int inputPin = 54;
+
+bool digitalPinMode(int pin, int dir){
+  FILE * fd;
+  char fName[128];
+
+  // Exporting the pin to be used
+  if(( fd = fopen("/sys/class/gpio/export", "w")) == NULL) {
+    printf("Error: unable to export pin\n");
+    return false;
+  }
+  fprintf(fd, "%d\n", pin);
+  fclose(fd);
+
+  // Setting direction of the pin
+  sprintf(fName, "/sys/class/gpio/gpio%d/direction", pin);
+  if((fd = fopen(fName, "w")) == NULL) {
+    printf("Error: can't open pin direction\n");
+    return false;
+  }
+  if(dir == OUTPUT) {
+    fprintf(fd, "out\n");
+  } else {
+    fprintf(fd, "in\n");
+  }
+  fclose(fd);
+
+  return true;
+}
+
+bool digitalWrite(int pin, int val) {
+  FILE * fd;
+  char fName[128];
+
+  // Open pin value file
+  sprintf(fName, "/sys/class/gpio/gpio%d/value", pin);
+  if((fd = fopen(fName, "w")) == NULL) {
+    printf("Error: can't open pin value\n");
+    return false;
+  }
+  if(val == HIGH) {
+    fprintf(fd, "1\n");
+  } else {
+    fprintf(fd, "0\n");
+  }
+  fclose(fd);
+
+  return true;
+}
+
+int setup() {
+   if (!digitalPinMode(outputPin, OUTPUT))
+     return -1;
+   return 0;
+}
+
+int digitalRead(int pin) {
+  FILE * fd;
+  char fName[128];
+  char val[2];
+
+  // Open pin value file
+  sprintf(fName, "/sys/class/gpio/gpio%d/value", pin);
+  if((fd = fopen(fName, "r")) == NULL) {
+    printf("Error: can't open pin value\n");
+    return false;
+  }
+  fgets(val, 2, fd);
+  fclose(fd);
+
+  return atoi(val);
+}
+
+int setup() {
+   if (!digitalPinMode(inputPin, INPUT))
+     return -1;
+
+   return 0;
+}
+
+//=============================================
+
 // global property variables for path: /light
 static char g_light_RESOURCE_PROPERTY_NAME_value[] = "value"; // the name for the attribute
 bool g_light_value = false; // current value of property "value" Status of the switch
@@ -276,7 +370,11 @@ post_light(oc_request_t *request, oc_interface_mask_t interfaces, void *user_dat
     // TODO: ACTUATOR add here the code to talk to the HW if one implements an actuator.
     // one can use the global variables as input to those calls
     // the global values have been updated already with the data from the request
-
+     
+    //Turn on/off ARTIK LED when Server device receive post from client device====
+    digitalWrite(outputPin, g_light_value);
+    //============================================================================
+   
     oc_send_response(request, OC_STATUS_CHANGED);
   }
   else
@@ -407,6 +505,20 @@ int init;
   // install Ctrl-C
   sigaction(SIGINT, &sa, NULL);
 #endif
+ 
+     //=enabling GPIO and checking and testing on ARTIK==========================
+    if (setup() == -1)
+      {
+        exit(1);
+      }
+
+    digitalWrite(outputPin, HIGH);
+    sleep(1);
+    digitalWrite(outputPin, LOW);
+    sleep(1);
+    //===========================================================================
+ 
+ 
   // initialize global variables for endpoint "/light"
   g_light_value = false; // current value of property "value" Status of the switch
 
