@@ -1,17 +1,22 @@
 # Sample Code for Samsung ARTIK BoardProjects
 
-This repository contains code for creating IoTivity and IoTivity-lite server on the Samsung ARTIK boards. There is currently just one sample, but it has been tested to run on the ARTIK 530s using both IoTivity and IoTivity-lite.
+This repository contains code for creating IoTivity and IoTivity-lite server on the Samsung ARTIK boards.
+Currently, code in this repository operate only Eagleye 530s board that use ARTIK(SAMSUNG IoT platform) 530s system-on-module. 
 
-There is currently one sample project.
+There are currently samples project.
+IoTivity-FS
 - OCFArtikEnviro - This project creates an OCF server that controls the LED on the Enviro pHat by using ARTIK Library.
-- artiklight - This project creates an OCF server that controls the blue LED directly on the ARTIK 530s. It uses the binarySwith resource
+- artiklight - This project creates an OCF server that controls the blue LED directly on the Eagleye 530s. 
+  It uses the binarySwith resource
+IoTivity-lite
+- artik-example - This project creates an OCF server that controls the blue LED and read switch status on the Eagleye 530s.
 
 # Artik information
 
-
 You can see ARTIK SDK(API) on this page: https://developer.artik.io/documentation/api/index.html.
- 
+
 Other links:
+- Description of Eagleye 530s : http://wiki.seeedstudio.com/Eagleye_530s/
 - GPIO example code : https://developer.artik.io/documentation/api/gpio_test_2artik_gpio_test_8c-example.html
 - ARTIK SDK example code on github : https://github.com/SamsungARTIK/artik-sdk-examples
 - Eagleye 530s pin programming : http://wiki.seeedstudio.com/Eagleye_530s/#play-with-pin-programming
