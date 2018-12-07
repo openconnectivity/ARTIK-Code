@@ -58,13 +58,40 @@ This command will do a number of things:
       2. This isn't a script, but you need to "cd project_name" to run all the other scripts.
       3. Copy the setup.sh from the directory of the sample you want to install into the current project directory. (in the ARTIK-Code repository you just installed)
       4. ./setup.sh - This will load all the necessary stuff to build and run the sample project.
-      5. edit_input2.sh - edit the device description input file (project_name.json) if necessary.
-      6. gen2.sh - generate the code, introspection file, PICS file, and onboarding file from the device description file.
-      7. build2.sh - compile and link everything
-      8. edit_code2.sh - edit the server source code if necessary.
-      9. reset2.sh - reset the sever to RFOTM by copying a fresh onboarding file
-      10. run2.sh - run the currently compiled server in the appropriate directory
+      5. edit_config.sh - Edit the project configuration file (project_name-config.json) if necessary. (e.g. to change the IoTivity version or target OS). NOTE: Temporarily, only the first entry in the configuration implementation and platform arrays is used.
+      6. edit_input.sh - edit the device description input file (project_name.json) if necessary.
+      7. gen.sh - generate the code, introspection file, PICS file, and onboarding file from the device description file.
+      8. build.sh - compile and link everything
+      9. edit_code.sh - edit the server source code if necessary.
+      10. reset.sh - reset the sever to RFOTM by copying a fresh onboarding file
+      11. run.sh - run the currently compiled server in the appropriate directory
   2. To test the project, you will need to run a client. Here are some options.
       1. Discover, onboard and control the server using OTGC
       2. Discover, onboard and control the server using DeviceSpy
       3. Test the server using CTT
+      Links for download OTGC and DeviceSpy : https://github.com/openconnectivityfoundation/development-support/
+      
+  # Try to build 'artik-example' example
+  
+  1. Install the development environment
+      1. Install all of this from the home directory: cd ~
+      2. IoTivity-lite development: curl https://openconnectivity.github.io/IOTivity-Lite-setup/install.sh | bash
+      3. Project scripts: curl https://openconnectivity.github.io/Project-Scripts/install.sh | bash 
+      4. ARTIK 530s examples (answer “y” to all the prompts): curl https://openconnectivity.github.io/ARTIK-Code/install.sh | bash
+      5. Make sure the PATH is set: reboot or source ~/.bashrc
+  2. Build example
+      1. Create a new OCF project (can be named anything, but we’ll use the following):
+         - cd ~/workspace
+         - create_project.sh artik-example
+         - cd artik-example
+      2. Typing command for using(copying) pre-built sample
+         - cp ~/ARTIK-Code/IoTivity-lite/artik-example/setup.sh ./
+         - sh setup.sh
+      3. Build example(OCF server device) with Project-Scripts
+         Program configuration file and device description file already exist(Step 1-4, 2-2), so you don't have to use(type) edit_config.sh and edit_input.sh. (If you type this command, you can see the code.)
+         - Automatically generate the code, introspection file and security files: gen.sh
+         - Build the project executable: build.sh
+         - Set the security to “ready for owner transfer method” (RFOTM): reset.sh
+         - Run the server code on the ARTIK 530s: run.sh
+      4. Run OTGC and control the hardware light/switch on the ARTIK 530s
+      
