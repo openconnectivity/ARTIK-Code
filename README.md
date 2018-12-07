@@ -4,10 +4,12 @@ This repository contains code for creating IoTivity and IoTivity-lite server on 
 Currently, code in this repository operate only Eagleye 530s board that use ARTIK(SAMSUNG IoT platform) 530s system-on-module. 
 
 There are currently samples project.
+
 IoTivity-FS
 - OCFArtikEnviro - This project creates an OCF server that controls the LED on the Enviro pHat by using ARTIK Library.
 - artiklight - This project creates an OCF server that controls the blue LED directly on the Eagleye 530s. 
   It uses the binarySwith resource
+  
 IoTivity-lite
 - artik-example - This project creates an OCF server that controls the blue LED and read switch status on the Eagleye 530s.
 
